@@ -1,4 +1,5 @@
 53d52
 < import org.apache.nutch.fetcher.RabbitmqProxy;
 632d630
-<             RabbitmqProxy.send(content);
+<             RabbitmqProxybitmqProxy.send(content, getConf());
+

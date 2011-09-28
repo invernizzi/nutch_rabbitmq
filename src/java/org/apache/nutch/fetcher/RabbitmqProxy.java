@@ -21,6 +21,7 @@ import java.io.*;
 import org.apache.nutch.protocol.Content;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 
 
 import com.rabbitmq.client.ConnectionFactory;
@@ -30,25 +31,30 @@ import com.rabbitmq.client.Channel;
 public class RabbitmqProxy {
 
   	public static final Log LOG = LogFactory.getLog(RabbitmqProxy.class);
-	static final RabbitmqProxy instance = new RabbitmqProxy();
+	static RabbitmqProxy instance = null;
 	static Connection connection;
 	static Channel channel;
-	static final String exchange_name = "EXCHANGE NAME";
+	static String exchange_name;
 
-	private RabbitmqProxy() {
+	private RabbitmqProxy(Configuration configuration) {
 		try{
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("IP");
-			factory.setUsername("USER");
-			factory.setPassword("PASS");
-			factory.setVirtualHost("VIRTUALHOST");
+			factory.setHost(configuration.get("rabbitmq.ip"));
+			factory.setUsername(configuration.get("rabbitmq.username"));
+			factory.setPassword(configuration.get("rabbitmq.password"));
+			factory.setVirtualHost(configuration.get("rabbitmq.virtualhost"));
 			connection = factory.newConnection();
 			channel = connection.createChannel();
+			exchange_name = configuration.get("rabbitmq.exchange");
 			channel.exchangeDeclare(exchange_name, "fanout");
 		} catch (java.io.IOException e) {LOG.fatal(e);}
+
 	}
 
-	public static void send(Content content) {
+	public static void send(Content content, Configuration configuration) {
+		if (instance == null) {
+			instance = new RabbitmqProxy(configuration);
+		}
 		instance._send(content);
 	}
 
@@ -56,6 +62,7 @@ public class RabbitmqProxy {
 		try{
 			String message = content.getUrl();
 			channel.basicPublish(exchange_name, "", null, message.getBytes());
+
 			//channel.close();
 			//connection.close();
 		} catch(Exception e){LOG.fatal(e);}
