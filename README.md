@@ -1,4 +1,4 @@
-Nutch-RabbiMQ
+Nutch-RabbitMQ
 ===============
 
 A patch for Nutch that publishes the stream of fetched urls to a RabbitMQ publisher/consumer queue.
