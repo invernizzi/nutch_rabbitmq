@@ -5,6 +5,7 @@ A patch for Nutch that publishes the stream of fetched urls to a RabbitMQ publis
 
 To use it, add this to your `conf/nutch-site.xml`
 
+``` xml
     <property>
         <name>rabbitmq.ip</name>
         <value>127.0.0.1</value>
@@ -30,4 +31,4 @@ To use it, add this to your `conf/nutch-site.xml`
         <valuealue>urls_tide</value>
         <description>RabbitMQ "Exchange" name for propertyoducer/consumers queues</description>
     </property>
-
+```
